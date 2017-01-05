@@ -1,0 +1,45 @@
+
+TARGET      = cdr_rtsp_srv
+OBJPATH     = .
+SOURCES     = $(wildcard *.c ./comm/*.c  ./net/*c ./rtcp/*c ./rtp/*c ./rtsp/*c ./utils/*c) 
+OBJS        = $(patsubst %.c,%.o,$(SOURCES))
+FULLOBJS    = $(patsubst %.c,$(OBJPATH)/%.o,$(SOURCES))
+CDRBASE_DIR = $(shell pwd)
+
+
+INCPATH := -I$(CDRBASE_DIR)/comm
+INCPATH += -I$(CDRBASE_DIR)/net
+INCPATH += -I$(CDRBASE_DIR)/rtcp
+INCPATH += -I$(CDRBASE_DIR)/rtp
+INCPATH += -I$(CDRBASE_DIR)/rtsp
+INCPATH += -I$(CDRBASE_DIR)/utils
+
+
+OTHER_LIB:= -lstdc++ -lpthread -DRTSP_SERVER_DEMO -g
+
+
+CC = gcc 
+STRIP = strip 
+
+
+###添加-c 选项把源代码都编译成为中间文件.
+COMPFLAGS   = -c -O2 -fPIC
+
+all:$(TARGET)
+$(TARGET):$(OBJS)	
+	$(CC) $(CFLAGS) $(FULLOBJS) -o $(TARGET) $(OTHER_LIB) $(INCPATH)
+	$(STRIP) $(TARGET)
+	ls -lh $(TARGET)
+
+	
+$(OBJS):$(SOURCES) 
+	$(CC) $*.c -o $(OBJPATH)/$@ $(INCPATH) $(CFLAGS) $(OTHER_LIB) $(COMPFLAGS)
+
+clean:		
+	@rm -rf $(FULLOBJS)	
+	@rm -f $(OBJPATH)/.*.swp
+	@rm -f $(TARGET)	
+
+
+
+
